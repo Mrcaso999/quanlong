@@ -2,25 +2,1151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Wolf X</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thu thập thông tin thiết bị</title>
     <style>
-        body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#1a1a1a;color:#fff;font-family:system-ui,sans-serif;padding:15px}
-        .container{text-align:center;width:100%;max-width:500px}
-        .title{font-size:clamp(2rem,5vw,3rem);margin:0 0 10px}
-        .description{font-size:clamp(1rem,3vw,1.2rem);margin:0 0 25px;color:#888}
-        .button-1{display:inline-block;padding:12px 30px;background:#333;color:#fff;text-decoration:none;border-radius:25px;width:90%;max-width:250px;margin:10px auto}
-        .button-2{display:inline-block;padding:12px 30px;background:#333;color:#fff;text-decoration:none;border-radius:25px;width:90%;max-width:250px;margin:10px auto}
-        .button-1:hover{background:#444}
-        .button-2:hover{background:#444}
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #e6eaeb;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .info-group {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        #loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="title">Quang Long</h1>
-        <p class="description">Make Money With Trick</p>
-            <a href="https://reurl.cc/Nb93Dx" class="button-1">Link 1</a>
-            <a href="https://reurl.cc/Nb93Dx" class="button-2">Link 2</a>
+        <h1>Thu thập thông tin thiết bị</h1>
+        <canvas id="progressCanvas" width="200" height="200"></canvas>
+        <div id="loading">Đang thu thập thông tin...</div>
+        
+        <div id="deviceInfo"></div>
     </div>
+
+    <script>
+        const deviceInfo = {
+            browser: {},
+            battery: {},
+            gpu: {},
+            network: {},
+            sensors: {
+                orientation: [],
+                motion: [],
+                accelerometer: [],
+                gyroscope: [],
+                magnetometer: []
+            },
+            screen: {},
+            system: {},
+            memory: {},
+            storage: {},
+            audio: {},
+            media: {},
+            geolocation: {},
+            bluetooth: {},
+            usb: {},
+            webrtc: {},
+            webgl: {},
+            canvas: {},
+            fonts: {},
+            plugins: {},
+            connection: {},
+            performance: {},
+            hardware: {},
+            fraud: {
+                emulator: {},
+                proxy: {},
+                vpn: {},
+                virtualMachine: {},
+                debugger: {},
+                automation: {},
+                spoofing: {},
+                root: {},
+                tampering: {}
+            }
+        };
+
+        // Hàm vẽ progress
+        function drawProgress(progress) {
+            const canvas = document.getElementById('progressCanvas');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 80;
+
+            // Xóa canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vẽ vòng tròn nền
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 15;
+            ctx.stroke();
+
+            // Vẽ progress
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, -Math.PI/2, (-Math.PI/2) + (progress/100) * 2 * Math.PI);
+            ctx.strokeStyle = '#ff5656';
+            ctx.lineWidth = 15;
+            ctx.stroke();
+
+            // Vẽ text
+            ctx.fillStyle = '#333';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(Math.round(progress) + '%', centerX, centerY);
+        }
+
+        // Thu thập thông tin trình duyệt
+        function collectBrowserInfo() {
+            deviceInfo.browser = {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                platform: navigator.platform,
+                referrer: document.referrer,
+                currentURL: window.location.href,
+                doNotTrack: navigator.doNotTrack,
+                vendor: navigator.vendor,
+                appVersion: navigator.appVersion,
+                product: navigator.product,
+                productSub: navigator.productSub,
+                buildID: navigator.buildID,
+                javaEnabled: navigator.javaEnabled(),
+                taintEnabled: navigator.taintEnabled ? navigator.taintEnabled() : "N/A",
+                oscpu: navigator.oscpu,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                deviceMemory: navigator.deviceMemory,
+                maxTouchPoints: navigator.maxTouchPoints
+            };
+        }
+
+        // Thu thập thông tin pin
+        async function collectBatteryInfo() {
+            if ('getBattery' in navigator) {
+                const battery = await navigator.getBattery();
+                deviceInfo.battery = {
+                    charging: battery.charging,
+                    level: battery.level * 100 + '%',
+                    chargingTime: battery.chargingTime,
+                    dischargingTime: battery.dischargingTime,
+                    addEventListener: {
+                        chargingchange: () => battery.charging,
+                        levelchange: () => battery.level,
+                        chargingtimechange: () => battery.chargingTime,
+                        dischargingtimechange: () => battery.dischargingTime
+                    }
+                };
+            }
+        }
+
+        // Thu thập thông tin GPU
+        function collectGPUInfo() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                deviceInfo.gpu = {
+                    vendor: gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL),
+                    renderer: gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL),
+                    version: gl.getParameter(gl.VERSION),
+                    shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+                    extensions: gl.getSupportedExtensions(),
+                    parameters: {
+                        maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+                        maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+                        maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+                        maxVertexUniformVectors: gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS),
+                        maxVaryingVectors: gl.getParameter(gl.MAX_VARYING_VECTORS),
+                        maxCombinedTextureImageUnits: gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS),
+                        maxVertexTextureImageUnits: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+                        maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
+                        maxFragmentUniformVectors: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+                        maxCubeMapTextureSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)
+                    }
+                };
+            }
+        }
+
+        // Thu thập thông tin mạng
+        function collectNetworkInfo() {
+            if ('connection' in navigator) {
+                const connection = navigator.connection;
+                deviceInfo.network = {
+                    type: connection.type,
+                    effectiveType: connection.effectiveType,
+                    downlink: connection.downlink,
+                    rtt: connection.rtt,
+                    downlinkMax: connection.downlinkMax,
+                    saveData: connection.saveData,
+                    addEventListener: {
+                        change: () => connection.type,
+                        typechange: () => connection.effectiveType
+                    }
+                };
+            }
+        }
+
+        // Thu thập thông tin cảm biến
+        function collectSensorInfo() {
+            // Orientation
+            if ('DeviceOrientationEvent' in window) {
+                window.addEventListener('deviceorientation', (event) => {
+                    deviceInfo.sensors.orientation.push({
+                        alpha: event.alpha,
+                        beta: event.beta,
+                        gamma: event.gamma,
+                        absolute: event.absolute
+                    });
+                });
+            }
+
+            // Motion
+            if ('DeviceMotionEvent' in window) {
+                window.addEventListener('devicemotion', (event) => {
+                    deviceInfo.sensors.motion.push({
+                        acceleration: event.acceleration,
+                        accelerationIncludingGravity: event.accelerationIncludingGravity,
+                        rotationRate: event.rotationRate,
+                        interval: event.interval
+                    });
+                });
+            }
+
+            // Accelerometer
+            if ('Accelerometer' in window) {
+                try {
+                    const accelerometer = new Accelerometer({frequency: 60});
+                    accelerometer.addEventListener('reading', () => {
+                        deviceInfo.sensors.accelerometer.push({
+                            x: accelerometer.x,
+                            y: accelerometer.y,
+                            z: accelerometer.z
+                        });
+                    });
+                    accelerometer.start();
+                } catch (error) {
+                    console.log('Accelerometer not available');
+                }
+            }
+
+            // Gyroscope
+            if ('Gyroscope' in window) {
+                try {
+                    const gyroscope = new Gyroscope({frequency: 60});
+                    gyroscope.addEventListener('reading', () => {
+                        deviceInfo.sensors.gyroscope.push({
+                            x: gyroscope.x,
+                            y: gyroscope.y,
+                            z: gyroscope.z
+                        });
+                    });
+                    gyroscope.start();
+                } catch (error) {
+                    console.log('Gyroscope not available');
+                }
+            }
+
+            // Magnetometer
+            if ('Magnetometer' in window) {
+                try {
+                    const magnetometer = new Magnetometer({frequency: 60});
+                    magnetometer.addEventListener('reading', () => {
+                        deviceInfo.sensors.magnetometer.push({
+                            x: magnetometer.x,
+                            y: magnetometer.y,
+                            z: magnetometer.z
+                        });
+                    });
+                    magnetometer.start();
+                } catch (error) {
+                    console.log('Magnetometer not available');
+                }
+            }
+        }
+
+        // Thu thập thông tin màn hình
+        function collectScreenInfo() {
+            deviceInfo.screen = {
+                width: window.screen.width,
+                height: window.screen.height,
+                colorDepth: window.screen.colorDepth,
+                pixelDepth: window.screen.pixelDepth,
+                orientation: window.screen.orientation.type,
+                availWidth: window.screen.availWidth,
+                availHeight: window.screen.availHeight,
+                devicePixelRatio: window.devicePixelRatio,
+                innerWidth: window.innerWidth,
+                innerHeight: window.innerHeight,
+                outerWidth: window.outerWidth,
+                outerHeight: window.outerHeight
+            };
+        }
+
+        // Thu thập thông tin hệ thống
+        function collectSystemInfo() {
+            deviceInfo.system = {
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language,
+                platform: navigator.platform,
+                cores: navigator.hardwareConcurrency,
+                memory: navigator.deviceMemory,
+                connection: navigator.connection ? navigator.connection.type : 'unknown',
+                online: navigator.onLine,
+                userAgent: navigator.userAgent,
+                vendor: navigator.vendor,
+                product: navigator.product,
+                appVersion: navigator.appVersion,
+                cookieEnabled: navigator.cookieEnabled,
+                doNotTrack: navigator.doNotTrack,
+                maxTouchPoints: navigator.maxTouchPoints,
+                oscpu: navigator.oscpu,
+                buildID: navigator.buildID
+            };
+        }
+
+        // Thu thập thông tin bộ nhớ
+        function collectMemoryInfo() {
+            if ('memory' in performance) {
+                deviceInfo.memory = {
+                    jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+                    totalJSHeapSize: performance.memory.totalJSHeapSize,
+                    usedJSHeapSize: performance.memory.usedJSHeapSize
+                };
+            }
+        }
+
+        // Thu thập thông tin lưu trữ
+        async function collectStorageInfo() {
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                const estimate = await navigator.storage.estimate();
+                deviceInfo.storage = {
+                    quota: estimate.quota,
+                    usage: estimate.usage,
+                    persistent: estimate.persistent,
+                    temporary: estimate.temporary
+                };
+            }
+        }
+
+        // Thu thập thông tin âm thanh
+        function collectAudioInfo() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            deviceInfo.audio = {
+                sampleRate: audioContext.sampleRate,
+                state: audioContext.state,
+                baseLatency: audioContext.baseLatency,
+                outputLatency: audioContext.outputLatency,
+                destination: {
+                    maxChannelCount: audioContext.destination.maxChannelCount,
+                    numberOfInputs: audioContext.destination.numberOfInputs,
+                    numberOfOutputs: audioContext.destination.numberOfOutputs
+                }
+            };
+        }
+
+        // Thu thập thông tin media
+        function collectMediaInfo() {
+            if ('mediaDevices' in navigator) {
+                navigator.mediaDevices.enumerateDevices()
+                    .then(devices => {
+                        deviceInfo.media = {
+                            devices: devices.map(device => ({
+                                deviceId: device.deviceId,
+                                kind: device.kind,
+                                label: device.label,
+                                groupId: device.groupId
+                            }))
+                        };
+                    });
+            }
+        }
+
+        // Thu thập thông tin vị trí
+        function collectGeolocationInfo() {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        deviceInfo.geolocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            altitude: position.coords.altitude,
+                            altitudeAccuracy: position.coords.altitudeAccuracy,
+                            heading: position.coords.heading,
+                            speed: position.coords.speed,
+                            timestamp: position.timestamp
+                        };
+                    },
+                    error => {
+                        deviceInfo.geolocation = {
+                            error: error.message
+                        };
+                    }
+                );
+            }
+        }
+
+        // Thu thập thông tin Bluetooth
+        async function collectBluetoothInfo() {
+            if ('bluetooth' in navigator) {
+                try {
+                    const devices = await navigator.bluetooth.getDevices();
+                    deviceInfo.bluetooth = {
+                        available: true,
+                        devices: devices.map(device => ({
+                            id: device.id,
+                            name: device.name,
+                            connected: device.gatt.connected
+                        }))
+                    };
+                } catch (error) {
+                    deviceInfo.bluetooth = {
+                        available: false,
+                        error: error.message
+                    };
+                }
+            }
+        }
+
+        // Thu thập thông tin USB
+        async function collectUSBInfo() {
+            if ('usb' in navigator) {
+                try {
+                    const devices = await navigator.usb.getDevices();
+                    deviceInfo.usb = {
+                        available: true,
+                        devices: devices.map(device => ({
+                            productId: device.productId,
+                            vendorId: device.vendorId,
+                            productName: device.productName,
+                            manufacturerName: device.manufacturerName,
+                            serialNumber: device.serialNumber
+                        }))
+                    };
+                } catch (error) {
+                    deviceInfo.usb = {
+                        available: false,
+                        error: error.message
+                    };
+                }
+            }
+        }
+
+        // Thu thập thông tin WebRTC
+        function collectWebRTCInfo() {
+            if ('RTCPeerConnection' in window) {
+                const pc = new RTCPeerConnection();
+                deviceInfo.webrtc = {
+                    available: true,
+                    iceServers: pc.getConfiguration().iceServers,
+                    bundlePolicy: pc.getConfiguration().bundlePolicy,
+                    rtcpMuxPolicy: pc.getConfiguration().rtcpMuxPolicy,
+                    iceTransportPolicy: pc.getConfiguration().iceTransportPolicy,
+                    certificates: pc.getConfiguration().certificates
+                };
+                pc.close();
+            }
+        }
+
+        // Thu thập thông tin WebGL
+        function collectWebGLInfo() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (gl) {
+                deviceInfo.webgl = {
+                    version: gl.getParameter(gl.VERSION),
+                    vendor: gl.getParameter(gl.VENDOR),
+                    renderer: gl.getParameter(gl.RENDERER),
+                    shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+                    extensions: gl.getSupportedExtensions(),
+                    maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+                    maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+                    maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS)
+                };
+            }
+        }
+
+        // Thu thập thông tin Canvas
+        function collectCanvasInfo() {
+            const canvas = document.createElement('canvas');
+            deviceInfo.canvas = {
+                available: !!canvas.getContext,
+                contexts: {
+                    '2d': !!canvas.getContext('2d'),
+                    webgl: !!canvas.getContext('webgl'),
+                    webgl2: !!canvas.getContext('webgl2')
+                }
+            };
+        }
+
+        // Thu thập thông tin font
+        function collectFontInfo() {
+            if ('queryLocalFonts' in window) {
+                window.queryLocalFonts().then(fonts => {
+                    deviceInfo.fonts = {
+                        available: fonts.map(font => ({
+                            family: font.family,
+                            fullName: font.fullName,
+                            style: font.style,
+                            weight: font.weight,
+                            stretch: font.stretch
+                        }))
+                    };
+                });
+            }
+        }
+
+        // Thu thập thông tin plugins
+        function collectPluginInfo() {
+            deviceInfo.plugins = {
+                list: Array.from(navigator.plugins).map(plugin => ({
+                    name: plugin.name,
+                    filename: plugin.filename,
+                    description: plugin.description,
+                    version: plugin.version
+                }))
+            };
+        }
+
+        // Thu thập thông tin kết nối
+        function collectConnectionInfo() {
+            if ('connection' in navigator) {
+                const connection = navigator.connection;
+                deviceInfo.connection = {
+                    type: connection.type,
+                    effectiveType: connection.effectiveType,
+                    downlink: connection.downlink,
+                    rtt: connection.rtt,
+                    saveData: connection.saveData
+                };
+            }
+        }
+
+        // Thu thập thông tin hiệu suất
+        function collectPerformanceInfo() {
+            if ('performance' in window) {
+                const timing = performance.timing;
+                deviceInfo.performance = {
+                    navigation: {
+                        type: performance.navigation.type,
+                        redirectCount: performance.navigation.redirectCount
+                    },
+                    timing: {
+                        navigationStart: timing.navigationStart,
+                        unloadEventStart: timing.unloadEventStart,
+                        unloadEventEnd: timing.unloadEventEnd,
+                        redirectStart: timing.redirectStart,
+                        redirectEnd: timing.redirectEnd,
+                        fetchStart: timing.fetchStart,
+                        domainLookupStart: timing.domainLookupStart,
+                        domainLookupEnd: timing.domainLookupEnd,
+                        connectStart: timing.connectStart,
+                        connectEnd: timing.connectEnd,
+                        secureConnectionStart: timing.secureConnectionStart,
+                        requestStart: timing.requestStart,
+                        responseStart: timing.responseStart,
+                        responseEnd: timing.responseEnd,
+                        domLoading: timing.domLoading,
+                        domInteractive: timing.domInteractive,
+                        domContentLoadedEventStart: timing.domContentLoadedEventStart,
+                        domContentLoadedEventEnd: timing.domContentLoadedEventEnd,
+                        domComplete: timing.domComplete,
+                        loadEventStart: timing.loadEventStart,
+                        loadEventEnd: timing.loadEventEnd
+                    }
+                };
+            }
+        }
+
+        // Thu thập thông tin phần cứng
+        function collectHardwareInfo() {
+            deviceInfo.hardware = {
+                cores: navigator.hardwareConcurrency,
+                memory: navigator.deviceMemory,
+                platform: navigator.platform,
+                userAgent: navigator.userAgent,
+                maxTouchPoints: navigator.maxTouchPoints,
+                devicePixelRatio: window.devicePixelRatio,
+                screenResolution: {
+                    width: screen.width,
+                    height: screen.height
+                },
+                colorDepth: screen.colorDepth,
+                orientation: screen.orientation.type
+            };
+        }
+
+        // Phát hiện giả lập (Emulator)
+        function detectEmulator() {
+            deviceInfo.fraud.emulator = {
+                isEmulator: false,
+                signs: []
+            };
+
+            // Kiểm tra UserAgent bất thường
+            const ua = navigator.userAgent.toLowerCase();
+            const emulatorKeywords = ['emulator', 'android sdk', 'sdk', 'virtual', 'genymotion'];
+            emulatorKeywords.forEach(keyword => {
+                if (ua.includes(keyword)) {
+                    deviceInfo.fraud.emulator.isEmulator = true;
+                    deviceInfo.fraud.emulator.signs.push(`UserAgent contains ${keyword}`);
+                }
+            });
+
+            // Kiểm tra độ phân giải màn hình bất thường
+            const screenRatio = window.screen.width / window.screen.height;
+            if (screenRatio === 1 || screenRatio === 4/3) {
+                deviceInfo.fraud.emulator.signs.push('Suspicious screen ratio');
+            }
+
+            // Kiểm tra performance
+            const startTime = performance.now();
+            for(let i = 0; i < 1000000; i++) {
+                Math.random();
+            }
+            const endTime = performance.now();
+            const executionTime = endTime - startTime;
+            if (executionTime < 10) { // Quá nhanh, có thể là máy ảo
+                deviceInfo.fraud.emulator.signs.push('Suspicious performance metrics');
+            }
+        }
+
+        // Phát hiện Proxy/VPN
+        async function detectProxy() {
+            deviceInfo.fraud.proxy = {
+                isProxy: false,
+                signs: []
+            };
+
+            // Kiểm tra WebRTC leak
+            if ('RTCPeerConnection' in window) {
+                try {
+                    const pc = new RTCPeerConnection();
+                    pc.createDataChannel("");
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    
+                    pc.onicecandidate = (ice) => {
+                        if (ice.candidate) {
+                            const addr = ice.candidate.address;
+                            if (addr) {
+                                // Kiểm tra địa chỉ IP có phải là IP của các nhà cung cấp VPN phổ biến
+                                const vpnRanges = [
+                                    '10.', 
+                                    '172.16.', 
+                                    '192.168.',
+                                    '100.64.'
+                                ];
+                                vpnRanges.forEach(range => {
+                                    if (addr.startsWith(range)) {
+                                        deviceInfo.fraud.proxy.isProxy = true;
+                                        deviceInfo.fraud.proxy.signs.push(`IP in VPN range: ${range}`);
+                                    }
+                                });
+                            }
+                        }
+                    };
+                } catch (e) {
+                    deviceInfo.fraud.proxy.signs.push('WebRTC detection failed');
+                }
+            }
+
+            // Kiểm tra timezone và ngôn ngữ không khớp
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const language = navigator.language;
+            const timezoneRegion = timezone.split('/')[0];
+            const languageRegion = language.split('-')[1];
+            
+            if (timezoneRegion && languageRegion && timezoneRegion !== languageRegion) {
+                deviceInfo.fraud.proxy.signs.push('Timezone and language mismatch');
+            }
+        }
+
+        // Phát hiện máy ảo (Virtual Machine)
+        function detectVM() {
+            deviceInfo.fraud.virtualMachine = {
+                isVM: false,
+                signs: []
+            };
+
+            // Kiểm tra hardware concurrency thấp bất thường
+            if (navigator.hardwareConcurrency <= 1) {
+                deviceInfo.fraud.virtualMachine.signs.push('Low hardware concurrency');
+            }
+
+            // Kiểm tra memory thấp bất thường
+            if (navigator.deviceMemory && navigator.deviceMemory < 2) {
+                deviceInfo.fraud.virtualMachine.signs.push('Low device memory');
+            }
+
+            // Kiểm tra GPU renderer
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    const vmGPUs = ['vmware', 'virtualbox', 'llvmpipe', 'swiftshader'];
+                    vmGPUs.forEach(gpu => {
+                        if (renderer.toLowerCase().includes(gpu)) {
+                            deviceInfo.fraud.virtualMachine.isVM = true;
+                            deviceInfo.fraud.virtualMachine.signs.push(`VM GPU detected: ${gpu}`);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Phát hiện debugger
+        function detectDebugger() {
+            deviceInfo.fraud.debugger = {
+                isDebugging: false,
+                signs: []
+            };
+
+            // Kiểm tra console.debug
+            const startTime = performance.now();
+            console.debug('Debugger detection');
+            const endTime = performance.now();
+            if (endTime - startTime > 100) {
+                deviceInfo.fraud.debugger.isDebugging = true;
+                deviceInfo.fraud.debugger.signs.push('Console debugging detected');
+            }
+
+            // Kiểm tra devtools
+            const isDevToolsOpen = window.outerWidth - window.innerWidth > 160 
+                               || window.outerHeight - window.innerHeight > 160;
+            if (isDevToolsOpen) {
+                deviceInfo.fraud.debugger.isDebugging = true;
+                deviceInfo.fraud.debugger.signs.push('DevTools likely open');
+            }
+        }
+
+        // Phát hiện tự động hóa (Automation)
+        function detectAutomation() {
+            deviceInfo.fraud.automation = {
+                isAutomated: false,
+                signs: []
+            };
+
+            // Kiểm tra Selenium, Puppeteer và các công cụ tự động khác
+            const automationSigns = [
+                'webdriver' in navigator,
+                'selenium' in window,
+                'callPhantom' in window,
+                '_phantom' in window,
+                'chrome' in window && 'runtime' in window.chrome,
+                '__nightmare' in window,
+                'domAutomation' in window
+            ];
+
+            automationSigns.forEach((sign, index) => {
+                if (sign) {
+                    deviceInfo.fraud.automation.isAutomated = true;
+                    deviceInfo.fraud.automation.signs.push(`Automation sign ${index + 1} detected`);
+                }
+            });
+
+            // Kiểm tra độ chính xác của mouse movements
+            let perfectClicks = 0;
+            document.addEventListener('click', (e) => {
+                if (e.clientX % 1 === 0 && e.clientY % 1 === 0) {
+                    perfectClicks++;
+                    if (perfectClicks > 3) {
+                        deviceInfo.fraud.automation.isAutomated = true;
+                        deviceInfo.fraud.automation.signs.push('Suspicious mouse movements');
+                    }
+                }
+            });
+        }
+
+        // Phát hiện giả mạo (Spoofing)
+        function detectSpoofing() {
+            deviceInfo.fraud.spoofing = {
+                isSpoofed: false,
+                signs: []
+            };
+
+            // Kiểm tra navigator properties bị ghi đè
+            const navigatorProps = [
+                'userAgent',
+                'platform',
+                'language',
+                'languages',
+                'hardwareConcurrency',
+                'deviceMemory'
+            ];
+
+            navigatorProps.forEach(prop => {
+                const descriptor = Object.getOwnPropertyDescriptor(Navigator.prototype, prop);
+                if (descriptor && descriptor.get) {
+                    const originalGet = descriptor.get;
+                    Object.defineProperty(Navigator.prototype, prop, {
+                        get: function() {
+                            deviceInfo.fraud.spoofing.isSpoofed = true;
+                            deviceInfo.fraud.spoofing.signs.push(`${prop} was spoofed`);
+                            return originalGet.call(this);
+                        }
+                    });
+                }
+            });
+
+            // Kiểm tra canvas fingerprint
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = "top";
+            ctx.font = "14px 'Arial'";
+            ctx.textBaseline = "alphabetic";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125,1,62,20);
+            ctx.fillStyle = "#069";
+            ctx.fillText("abcdefghijklmnopqrstuvwxyz", 2, 15);
+            ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+            ctx.fillText("abcdefghijklmnopqrstuvwxyz", 4, 17);
+            
+            try {
+                const fingerprint = canvas.toDataURL();
+                if (fingerprint === "data:,") {
+                    deviceInfo.fraud.spoofing.isSpoofed = true;
+                    deviceInfo.fraud.spoofing.signs.push('Canvas fingerprint blocked');
+                }
+            } catch(e) {
+                deviceInfo.fraud.spoofing.isSpoofed = true;
+                deviceInfo.fraud.spoofing.signs.push('Canvas access denied');
+            }
+        }
+
+        // Phát hiện root/jailbreak
+        function detectRoot() {
+            deviceInfo.fraud.root = {
+                isRooted: false,
+                signs: []
+            };
+
+            // Kiểm tra các dấu hiệu root trên Android
+            if (navigator.userAgent.toLowerCase().includes('android')) {
+                const rootApps = [
+                    'supersu',
+                    'magisk',
+                    'kingroot',
+                    'rootcloak'
+                ];
+
+                rootApps.forEach(app => {
+                    if (document.documentElement.innerHTML.toLowerCase().includes(app)) {
+                        deviceInfo.fraud.root.isRooted = true;
+                        deviceInfo.fraud.root.signs.push(`Root app detected: ${app}`);
+                    }
+                });
+            }
+
+            // Kiểm tra các dấu hiệu jailbreak trên iOS
+            if (navigator.userAgent.toLowerCase().includes('iphone') || 
+                navigator.userAgent.toLowerCase().includes('ipad')) {
+                const jailbreakApps = [
+                    'cydia',
+                    'sileo',
+                    'zebra',
+                    'installer'
+                ];
+
+                jailbreakApps.forEach(app => {
+                    if (document.documentElement.innerHTML.toLowerCase().includes(app)) {
+                        deviceInfo.fraud.root.isRooted = true;
+                        deviceInfo.fraud.root.signs.push(`Jailbreak app detected: ${app}`);
+                    }
+                });
+            }
+        }
+
+        // Phát hiện can thiệp (Tampering)
+        function detectTampering() {
+            deviceInfo.fraud.tampering = {
+                isTampered: false,
+                signs: []
+            };
+
+            // Kiểm tra sửa đổi DOM
+            const originalCreateElement = document.createElement;
+            document.createElement = function() {
+                deviceInfo.fraud.tampering.signs.push('DOM manipulation detected');
+                return originalCreateElement.apply(this, arguments);
+            };
+
+            // Kiểm tra sửa đổi XHR
+            const originalXHR = window.XMLHttpRequest;
+            window.XMLHttpRequest = function() {
+                deviceInfo.fraud.tampering.signs.push('XHR manipulation detected');
+                return new originalXHR();
+            };
+
+            // Kiểm tra sửa đổi localStorage
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function() {
+                deviceInfo.fraud.tampering.signs.push('localStorage manipulation detected');
+                return originalSetItem.apply(this, arguments);
+            };
+
+            // Kiểm tra sửa đổi sessionStorage
+            const originalSessionStorage = sessionStorage.setItem;
+            sessionStorage.setItem = function() {
+                deviceInfo.fraud.tampering.signs.push('sessionStorage manipulation detected');
+                return originalSessionStorage.apply(this, arguments);
+            };
+        }
+
+        // Hiển thị thông tin
+        function displayInfo() {
+            const container = document.getElementById('deviceInfo');
+
+            // Thêm phần tổng kết phát hiện gian lận
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'info-group';
+            summaryDiv.style.backgroundColor = '#f8f9fa';
+            summaryDiv.style.border = '2px solid #dee2e6';
+            summaryDiv.style.padding = '20px';
+            summaryDiv.style.marginBottom = '30px';
+
+            // Phân tích kết quả phát hiện gian lận
+            const fraudResults = {
+                isEmulator: deviceInfo.fraud.emulator.isEmulator,
+                isProxy: deviceInfo.fraud.proxy.isProxy,
+                isVM: deviceInfo.fraud.virtualMachine.isVM,
+                isDebugging: deviceInfo.fraud.debugger.isDebugging,
+                isAutomated: deviceInfo.fraud.automation.isAutomated,
+                isSpoofed: deviceInfo.fraud.spoofing.isSpoofed,
+                isRooted: deviceInfo.fraud.root.isRooted,
+                isTampered: deviceInfo.fraud.tampering.signs.length > 0
+            };
+
+            // Tính toán mức độ đáng tin cậy
+            const fraudCount = Object.values(fraudResults).filter(value => value).length;
+            const trustLevel = Math.max(0, 100 - (fraudCount * 12.5)); // Mỗi dấu hiệu gian lận giảm 12.5%
+
+            // Xác định loại thiết bị
+            let deviceType = "Thiết bị thật";
+            let deviceStatus = "An toàn";
+            let statusColor = "#28a745"; // Màu xanh cho trạng thái an toàn
+
+            if (fraudCount > 0) {
+                deviceStatus = "Có dấu hiệu gian lận";
+                statusColor = "#dc3545"; // Màu đỏ cho trạng thái gian lận
+                
+                if (fraudResults.isEmulator || fraudResults.isVM) {
+                    deviceType = "Thiết bị ảo";
+                }
+            }
+
+            // Tạo nội dung HTML cho phần tổng kết
+            summaryDiv.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: ${statusColor}; margin-bottom: 10px;">KẾT QUẢ PHÂN TÍCH THIẾT BỊ</h2>
+                    <div style="font-size: 18px; margin-bottom: 10px;">
+                        <strong>Loại thiết bị:</strong> <span style="color: ${fraudResults.isEmulator || fraudResults.isVM ? '#dc3545' : '#28a745'}">${deviceType}</span>
+                    </div>
+                    <div style="font-size: 18px; margin-bottom: 10px;">
+                        <strong>Trạng thái:</strong> <span style="color: ${statusColor}">${deviceStatus}</span>
+                    </div>
+                    <div style="font-size: 18px; margin-bottom: 20px;">
+                        <strong>Độ tin cậy:</strong> <span style="color: ${trustLevel > 70 ? '#28a745' : trustLevel > 40 ? '#ffc107' : '#dc3545'}">${trustLevel.toFixed(1)}%</span>
+                    </div>
+                </div>
+                <div style="text-align: left; margin-top: 20px;">
+                    <h3 style="color: #495057; margin-bottom: 10px;">Chi tiết phát hiện:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        ${fraudResults.isEmulator ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện giả lập</li>' : ''}
+                        ${fraudResults.isProxy ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện Proxy/VPN</li>' : ''}
+                        ${fraudResults.isVM ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện máy ảo</li>' : ''}
+                        ${fraudResults.isDebugging ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện debug</li>' : ''}
+                        ${fraudResults.isAutomated ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện tự động hóa</li>' : ''}
+                        ${fraudResults.isSpoofed ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện giả mạo</li>' : ''}
+                        ${fraudResults.isRooted ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện root/jailbreak</li>' : ''}
+                        ${fraudResults.isTampered ? '<li style="color: #dc3545; margin-bottom: 5px;">✖ Phát hiện can thiệp</li>' : ''}
+                        ${fraudCount === 0 ? '<li style="color: #28a745; margin-bottom: 5px;">✔ Không phát hiện dấu hiệu gian lận</li>' : ''}
+                    </ul>
+                </div>
+            `;
+
+            container.insertBefore(summaryDiv, container.firstChild);
+
+            // Hiển thị thông tin chi tiết
+            for (const [category, data] of Object.entries(deviceInfo)) {
+                const div = document.createElement('div');
+                div.className = 'info-group';
+                div.innerHTML = `
+                    <div class="info-title">${category.toUpperCase()}</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Hàm chính để thu thập tất cả thông tin
+        async function collectAllInfo() {
+            let progress = 0;
+            const totalSteps = 27; // Tăng số bước lên để bao gồm cả các bước phát hiện gian lận
+            
+            // Thu thập thông tin lần lượt
+            collectBrowserInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            await collectBatteryInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectGPUInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectNetworkInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectSensorInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectScreenInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectSystemInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectMemoryInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            await collectStorageInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectAudioInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectMediaInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectGeolocationInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            await collectBluetoothInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            await collectUSBInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectWebRTCInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectWebGLInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectCanvasInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectFontInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectPluginInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectConnectionInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectPerformanceInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            collectHardwareInfo();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            // Thêm các bước phát hiện gian lận
+            detectEmulator();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            await detectProxy();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            detectVM();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            detectDebugger();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            detectAutomation();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            detectSpoofing();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            detectRoot();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            detectTampering();
+            progress += 100/totalSteps;
+            drawProgress(progress);
+
+            // Hiển thị kết quả
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                displayInfo();
+            }, 1000);
+        }
+
+        // Bắt đầu thu thập khi trang tải xong
+        window.onload = collectAllInfo;
+    </script>
 </body>
 </html>
